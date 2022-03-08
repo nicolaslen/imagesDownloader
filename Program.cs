@@ -24,7 +24,7 @@ namespace imagesDownloader
             if (!File.Exists(linksFileName))
             {
                 using StreamWriter writer = new StreamWriter(errorFilePath, true);
-                writer.WriteLine("Message: No existe el archivo con los links. Debe llamarse links.txt");
+                writer.WriteLine("Mensaje: No existe el archivo con los links. Debe llamarse links.txt");
                 return;
             }
 
@@ -34,30 +34,30 @@ namespace imagesDownloader
                 Console.WriteLine($"Ojo que la carpeta {downloadFolder} no está vacía.");
             }
 
-            bool errors = false;
+            var errors = false;
             foreach (var line in File.ReadLines(linksFileName))
             {
                 try
                 {
-                    using var client = new WebClient();
                     var uri = new Uri(line);
                     var outputFileName = Path.GetFileName(uri.LocalPath);
                     var outputFilePath = Path.Combine(downloadDirectory, outputFileName);
 
-                    int i = 0;
+                    var i = 0;
                     while (File.Exists(outputFilePath))
                     {
                         outputFilePath = Path.Combine(downloadDirectory,
                             $"{Path.GetFileNameWithoutExtension(outputFileName)} ({++i}){Path.GetExtension(outputFileName)}");
                     }
 
+                    using var client = new WebClient();
                     client.DownloadFile(uri, outputFilePath);
                 }
                 catch (Exception ex)
                 {
                     errors = true;
                     using var writer = new StreamWriter(errorFilePath, true);
-                    writer.WriteLine("Message: " + ex.Message);
+                    writer.WriteLine($"Mensaje: {ex.Message}");
                 }
             }
 
